@@ -1,0 +1,87 @@
+a ->
+y ->
+t ->
+g ->
+o -> 
+r -> 
+j -> 
+d -> 
+h -> a, d
+b -> a, d
+k -> a, d
+u -> a
+p -> k
+v -> k
+e -> v
+f -> q, v
+s -> p, q, v
+m -> p, q, v
+l -> p, q, v
+z -> i, c, v
+w -> i, c, v
+c -> b, u, g
+i -> b, u, g
+n -> b, u, g, z, f
+q -> b, u, g, z, w
+x -> b, u, g, z, w
+
+a ->
+y ->
+t ->
+g ->
+o -> 
+r -> 
+j -> 
+d -> 
+u -> a
+h -> a, d
+b -> a, d
+k -> a, d
+p -> k, a, d
+v -> k, a, d
+e -> v, k, a, d
+c -> b, u, g, a, d
+i -> b, u, g, a, d
+z -> i, c, v, b, u, g, k, a, d
+w -> i, c, v, b, u, g, k, a, d
+q -> b, u, g, z, w, i, c, v, k, a, d
+x -> b, u, g, z, w, i, c, v, k, a, d
+f -> q, v, b, u, g, z, w, i, c, k, a, d
+s -> p, q, v, b, u, g, z, w, i, c, k, a, d
+m -> p, q, v, b, u, g, z, w, i, c, k, a, d
+l -> p, q, v, b, u, g, z, w, i, c, k, a, d
+n -> b, u, g, z, f, q, v, w, i, c, k, a, d
+
+
+1             -> a, y, t, g, o, r, j, d
+a             -> u
+a, d          -> k, b, h
+k             -> v, p
+u, b, g       -> c, i
+v             -> e
+v, c, i       -> z, w
+u, b, g, z, w -> q, x
+v, q, p       -> s, m, l
+v, q          -> f
+u, b, g, z, f -> n
+
+
+1 -> a, y, t, g, o, r, j, d
+  -> u, k, b, h
+  -> v, p, c, i
+  -> e, z, w
+  -> q, x
+  -> s, m, l, f
+  -> n
+
+
+(a,y,t,g,o,r,j,d)---->(u)---->(c,i)---->(z,w)---->(q,x)---->(s,m,l)
+         |                      ^         ^         |
+         |                      |         |         v
+         +-------->(k,b,h)------+------>(v,p)      (f)----->(n)
+                                          |
+                                          v
+                                         (e)
+
+
+[a, y, o, r, j, d, u, k, b, h, v, p, c, i, t, g, e, z, w, q, x, f, s, m, l, n]
