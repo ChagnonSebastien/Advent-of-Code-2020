@@ -122,7 +122,7 @@ def disolve(node, G):
 
 baseMap = [[c for c in row.rstrip('\n')] for row in open("input.txt", "r")]
 
-position = None
+center = None
 nodes = []
 
 for x in range(len(baseMap)):
@@ -131,7 +131,7 @@ for x in range(len(baseMap)):
         point = Vector(x, y)
 
         if char == "@":
-            position = str(point.x * 100 + point.y)
+            center = point
         
         if isNode(point, baseMap):
             nodes.append(point)
@@ -213,22 +213,13 @@ for (node, degree) in G.degree:
 for node in toRemove:
     disolve(node, G)
 
-sequence = "ayorjdgtukbhcivpezwqxfsmln"
+positions = [str((center.x+d.x) * 100 + (center.y+d.y)) for d in [Vector(-1,-1), Vector(-1,1), Vector(1,-1), Vector(1,1)]]
+print(positions)
+
+sequence = [(2, 'o'), (2, 'r'), (2, 'j'), (2, 'd'), (0, 'y'), (0, 'a'), (3, 't'), (3, 'g'), (1, 'u'), (1, 'k'), (1, 'b'), (1, 'h'), (2, 'v'), (2, 'p'), (3, 'e'), (0, 'c'), (0, 'i'), (3, 'z'), (3, 'w'), (0, 'q'), (0, 'x'), (3, 'f'), (3, 's'), (3, 'm'), (3, 'l'), (0, 'n')]
 distance = 0
-for next in sequence:
-    distance += nx.shortest_path_length(G, position, next, weight='length')
-    position = next
+for (robot, next) in sequence:
+    distance += nx.shortest_path_length(G, positions[robot], next, weight='length')
+    positions[robot] = next
 
 print(distance)
-
-
-color_map = []
-for node in G:
-    if len(node) > 1:
-        color_map.append('grey')
-    else: color_map.append('green' if isKey(node) else 'red')
-
-pos = nx.kamada_kawai_layout(G)
-nx.draw(G, pos=pos, node_color = color_map, with_labels=True)
-plt.savefig("simple_path.png") # save as png
-plt.show() # display
