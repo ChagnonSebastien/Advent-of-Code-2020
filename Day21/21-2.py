@@ -110,16 +110,23 @@ while cpu.run() is not None:
     pass
 
 program = [
-    "OR F J",
+
+    # a or (d and (e or not b or (not c and h)))
+    
+
+    "NOT C J",
+    "AND H J",
+
+    "NOT B T",
+    "OR T J",
+
     "OR E J",
-    "OR C J",
-    "OR B T",
-    "OR E T",
-    "AND T J",
-    "AND A J",
-    "NOT J J",
-    "OR E J",
+
     "AND D J",
+
+    "NOT A T",
+    "OR T J",
+
     "RUN"
 ]
 
