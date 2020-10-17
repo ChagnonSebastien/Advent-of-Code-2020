@@ -15,7 +15,7 @@ fn main() {
   let raw_part = args.get(2).expect("You need to specify the part to run").as_str();
   let part = Part::from_number(raw_part).expect("Invalid part.");
 
-  let file_name = format!("input-{}.txt", day);
+  let file_name = format!("inputs/input-{}.txt", day);
   let file = file_name.as_str();
   let contents = read_to_string(file).expect("Something went wrong reading the file");
   let input = String::from(contents.trim_end());
@@ -23,6 +23,7 @@ fn main() {
   match day {
     Day::DayOne => days::one::execute(input, &part),
     Day::DayTwo => days::two::execute(input, &part),
+    Day::DayThree => days::three::execute(input, &part),
     _ => panic!("Day not yet implemented"),
   }
 }
