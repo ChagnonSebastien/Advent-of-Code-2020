@@ -1,5 +1,6 @@
 mod utils;
 mod days;
+mod lib;
 
 use std::env::args;
 use std::fs::read_to_string;
@@ -24,6 +25,7 @@ fn main() {
     Day::DayOne => days::one::execute(input, &part),
     Day::DayTwo => days::two::execute(input, &part),
     Day::DayThree => days::three::execute(input, &part),
+    Day::DayFour => days::four::execute(input, &part),
     _ => panic!("Day not yet implemented"),
   }
 }

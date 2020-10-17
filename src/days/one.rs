@@ -1,45 +1,10 @@
 use crate::utils::Part;
+use crate::lib::{CardinalPoint, Vector2D};
 use std::fmt::{Display, Formatter, Result as FmtResult};
-
-enum Direction {
-  NORTH,
-  SOUTH,
-  EAST,
-  WEST,
-}
-
-impl Display for Direction {
-  fn fmt(&self, f: &mut Formatter) -> FmtResult {
-    write!(f, "{}", match self {
-      Direction::NORTH => "NORTH",
-      Direction::WEST => "WEST",
-      Direction::SOUTH => "SOUTH",
-      Direction::EAST => "EAST",
-    })
-  }
-}
-
-#[derive(Clone)]
-struct Vector2D {
-  x: isize,
-  y: isize,
-}
-
-impl Vector2D {
-  fn manhattan_distance(&self, other: &Vector2D) -> isize {
-    (self.x - other.x).abs() + (self.y - other.y).abs()
-  }
-}
-
-impl Display for Vector2D {
-  fn fmt(&self, f: &mut Formatter) -> FmtResult {
-    write!(f, "({}, {})", self.x, self.y)
-  }
-}
 
 struct Santa {
   position: Vector2D,
-  facing: Direction,
+  facing: CardinalPoint,
   history: Vec<Vector2D>,
 }
 
@@ -53,22 +18,22 @@ impl Santa {
     false
   }
 
-  fn rotate(&mut self, direction: &str) -> &Direction {
+  fn rotate(&mut self, direction: &str) -> &CardinalPoint {
     match direction {
       "L" => {
         self.facing = match self.facing {
-          Direction::NORTH => Direction::WEST,
-          Direction::WEST => Direction::SOUTH,
-          Direction::SOUTH => Direction::EAST,
-          Direction::EAST => Direction::NORTH,
+          CardinalPoint::NORTH => CardinalPoint::WEST,
+          CardinalPoint::WEST => CardinalPoint::SOUTH,
+          CardinalPoint::SOUTH => CardinalPoint::EAST,
+          CardinalPoint::EAST => CardinalPoint::NORTH,
         };
       },
       "R" => {
         self.facing = match self.facing {
-          Direction::NORTH => Direction::EAST,
-          Direction::WEST => Direction::NORTH,
-          Direction::SOUTH => Direction::WEST,
-          Direction::EAST => Direction::SOUTH,
+          CardinalPoint::NORTH => CardinalPoint::EAST,
+          CardinalPoint::WEST => CardinalPoint::NORTH,
+          CardinalPoint::SOUTH => CardinalPoint::WEST,
+          CardinalPoint::EAST => CardinalPoint::SOUTH,
         };
       },
       _ => panic!("Unknown turn direction: {}", direction),
@@ -79,10 +44,10 @@ impl Santa {
   fn walk(&mut self, distance: isize, stop_on_visited: bool) -> Result<&Vector2D, &Vector2D> {
     for _ in 0..distance {
       match self.facing {
-        Direction::NORTH => self.position.y -= 1,
-        Direction::WEST => self.position.x -= 1,
-        Direction::SOUTH => self.position.y += 1,
-        Direction::EAST => self.position.x += 1,
+        CardinalPoint::NORTH => self.position.y -= 1,
+        CardinalPoint::WEST => self.position.x -= 1,
+        CardinalPoint::SOUTH => self.position.y += 1,
+        CardinalPoint::EAST => self.position.x += 1,
       };
       if stop_on_visited && self.has_been(&self.position){
         return Err(&self.position)
@@ -113,7 +78,7 @@ pub fn execute(input: String, part: &Part) {
   let initial_position = Vector2D { x: 0, y: 0 };
   let mut santa = Santa {
     position: initial_position.clone(),
-    facing: Direction::NORTH,
+    facing: CardinalPoint::NORTH,
     history: vec![initial_position.clone()],
   };
   println!("Initial position: {}", initial_position);
