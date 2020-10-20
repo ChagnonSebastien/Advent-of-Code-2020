@@ -1,5 +1,6 @@
 use std::fmt::{Display, Formatter, Result as FmtResult};
 
+#[derive(PartialEq)]
 pub enum Part {
   PartOne,
   PartTwo,
