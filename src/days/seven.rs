@@ -1,5 +1,5 @@
 use crate::utils::Part;
-use regex;
+use regex::Regex;
 
 fn contains_abba(section: &str) -> bool {
   for i in 0..section.len() - 3 {
@@ -30,7 +30,7 @@ fn get_all_aba(section: &str) -> Vec<String> {
 }
 
 fn valid_ip(ip: &str) -> bool {
-  let re = regex::Regex::new(r"\[|\]").unwrap();
+  let re = Regex::new(r"\[|\]").unwrap();
   let mut inside_square_brackets = false;
   let mut has_abba = false;
   let mut invalid = false;
@@ -49,7 +49,7 @@ fn valid_ip(ip: &str) -> bool {
 }
 
 fn supports_ssl(ip: &str) -> bool {
-  let re = regex::Regex::new(r"\[|\]").unwrap();
+  let re = Regex::new(r"\[|\]").unwrap();
   let mut inside_square_brackets = false;
   let mut aba_list: Vec<String> = Vec::new();
   let mut bab_list: Vec<String> = Vec::new();
