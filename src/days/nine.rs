@@ -22,9 +22,7 @@ fn decompress(input: &str, recursive: bool) -> String {
       false => String::from(raw_pattern),
       true => decompress(raw_pattern, true),
     };
-    for _ in 0..parts[1] {
-      output.push_str(pattern.as_str());
-    }
+    for _ in 0..parts[1] { output.push_str(pattern.as_str()) }
     position = marker.end()+parts[0];
   }
   output.push_str(&input[position..input.len()]);
