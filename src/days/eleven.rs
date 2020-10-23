@@ -1,8 +1,9 @@
 use crate::utils::Part;
 use regex::Regex;
 use std::fmt::{Display, Formatter, Result as FmtResult};
-use std::collections::BinaryHeap;
+use std::collections::{BinaryHeap, HashSet};
 use std::cmp::Ordering;
+use chrono::Utc;
 
 #[derive(Copy, Clone)]
 enum Element {
@@ -267,7 +268,7 @@ impl PartialEq for Building {
 }
 impl Eq for Building {}
 
-pub fn execute(input: String, part: &Part) {
+fn part_one(input: String) {
   let mut initial_building = Building::empty();
   let floor_contents = input.split("\n").collect::<Vec<&str>>();
 
@@ -317,4 +318,163 @@ pub fn execute(input: String, part: &Part) {
       },
     }
   } {}
+}
+
+const AMOUNT_MATERIALS: u64 = 7;
+
+#[derive(PartialEq)]
+enum Operation { Plus, Minus }
+
+#[derive(Copy, Clone)]
+struct BitwiseBuilding {
+  state: u64,
+  moves: u64,
+}
+
+impl BitwiseBuilding {
+  fn elevator(&self) -> u64 {
+    self.state >> 56
+  }
+
+  fn set_elevator(&mut self, f: u64) {
+    self.state &= 0x00FFFFFFFFFFFFFF;
+    self.state |= f << 56;
+  }
+
+  fn floor(&self, f: u64) -> u64 {
+    self.state >> (AMOUNT_MATERIALS * 2) * f & 0b1111111_1111111
+  }
+
+  fn cost(&self) -> u64 {
+    let mut c = self.moves;
+    for i in 0..3 {
+      let mut f = self.floor(i);
+      let mut t = 0;
+      while f != 0 {
+        t += f & 1;
+        f >>= 1;
+      }
+      c += t * (3-i);
+    }
+    c
+  }
+
+  fn is_valid(&self) -> bool {
+    for i in 0..4 {
+      let floor = self.floor(i);
+      let generators = floor >> AMOUNT_MATERIALS;
+      if generators == 0 {
+        continue
+      }
+
+      let microchips = floor & 0b1111111;
+      let unassigned_microships = !generators & microchips;
+      if unassigned_microships != 0 {
+        return false;
+      }
+    }
+    true
+  }
+
+  fn move_item(&mut self, from_floor: u64, to_floor: u64, index: u64) {
+    let from_index = 1 << (from_floor * AMOUNT_MATERIALS * 2 + index);
+    let to_index = 1 << (to_floor * AMOUNT_MATERIALS * 2 + index);
+    self.state &= !from_index;
+    self.state |= to_index;
+  }
+
+  fn neighbors(&self) -> Vec<Self> {
+    let current_floor = self.elevator();
+    let floor = self.floor(current_floor);
+    let mut available_equipment: Vec<u64> = Vec::new();
+    for i in 0..AMOUNT_MATERIALS * 2 {
+      if floor >> i & 1 == 1 {
+        available_equipment.push(i);
+      }
+    }
+
+    let mut possibilities: Vec<Self> = Vec::new();
+    for offset in &[Operation::Minus, Operation::Plus] {
+      if (*offset == Operation::Minus && current_floor == 0) || (*offset == Operation::Plus && current_floor == 3) { continue }
+      let next_floor = match offset { Operation::Minus => current_floor - 1, Operation::Plus => current_floor + 1 };
+
+      for i in 0..available_equipment.len() {
+        let mut simple_neighbor = *self;
+        simple_neighbor.moves += 1;
+        simple_neighbor.set_elevator(next_floor);
+        simple_neighbor.move_item(current_floor, next_floor, available_equipment[i]);
+        if simple_neighbor.is_valid() {
+          possibilities.push(simple_neighbor);
+        }
+
+        for j in (i + 1)..available_equipment.len() {
+          let mut double_neighbor = simple_neighbor;
+          double_neighbor.move_item(current_floor, next_floor, available_equipment[j]);
+          if double_neighbor.is_valid() {
+            possibilities.push(double_neighbor);
+          }
+        }
+      }
+    }
+
+    possibilities
+  }
+
+  fn is_goal(&self) -> bool {
+    // Elevator and all components on third floor
+    self.state == 0b00000011_1111111_1111111_0000000_0000000_0000000_0000000_0000000_0000000
+  }
+}
+
+impl Ord for BitwiseBuilding {
+  fn cmp(&self, other: &Self) -> Ordering {
+    other.cost().cmp(&self.cost())
+  }
+}
+
+impl PartialOrd for BitwiseBuilding {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for BitwiseBuilding {
+    fn eq(&self, other: &Self) -> bool {
+        self.cost() == other.cost()
+    }
+}
+impl Eq for BitwiseBuilding {}
+
+fn part_two() {
+  let mut building = BitwiseBuilding {
+    //       Elevator F4.Gen  F4.Mic  F3.Gen  F3.Mic  F2.Gen  F2.Mic  F1.Gen  F1.Mic
+    state: 0b00000000_0000000_0000000_0000011_0000011_0000000_0001100_1111100_1110000,
+    moves: 0,
+  };
+
+  let mut possibilities: BinaryHeap<BitwiseBuilding> = BinaryHeap::new();
+  let mut visited: HashSet<u64> = HashSet::new();
+  visited.insert(building.state);
+
+  while !building.is_goal() {
+    for possibility in building.neighbors() {
+      if visited.insert(possibility.state) {
+        possibilities.push(possibility);
+      }
+    }
+
+    building = possibilities.pop().expect("No more possibilities");
+  }
+
+  println!("Found solution in {} moves.", building.moves);
+}
+
+pub fn execute(input: String, part: &Part) {
+  let start = Utc::now().time();
+  match part {
+    Part::PartOne => part_one(input),
+    Part::PartTwo => part_two(),
+  }
+  let end = Utc::now().time();
+  println!("Took {} seconds.", (end-start).num_seconds());
 }
