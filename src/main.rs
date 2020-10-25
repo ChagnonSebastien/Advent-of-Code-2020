@@ -37,6 +37,7 @@ fn main() {
     Day::DayThirteen => days::thriteen::execute(input, &part),
     Day::DayFourteen => days::fourteen::execute(input, &part),
     Day::DayFifteen => days::fifteen::execute(input, &part),
+    Day::DaySixteen => days::sixteen::execute(input, &part),
     _ => panic!("Day not yet implemented"),
   }
 }
