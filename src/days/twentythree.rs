@@ -281,7 +281,8 @@ impl Computer {
       }
     };
   }
-
+  
+  #[allow(dead_code)]
   fn print_instructions(&self) {
     for i in 0..self.instructions.len() {
       let instruction = self.instructions.get(i).unwrap();
