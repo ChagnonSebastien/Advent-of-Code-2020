@@ -70,31 +70,16 @@ impl Display for Santa {
 }
 
 pub fn execute(input: String, part: &Part) {
-  let stop_on_visited = match part {
-    Part::PartOne => false,
-    Part::PartTwo => true,
-  };
-
-  let initial_position = Vector2D { x: 0, y: 0 };
-  let mut santa = Santa {
-    position: initial_position.clone(),
-    facing: CardinalPoint::NORTH,
-    history: vec![initial_position.clone()],
-  };
-  println!("Initial position: {}", initial_position);
-
-  for instruction in input.split(", ") {
-    let string_instruction = String::from(instruction);
-    let parts = string_instruction.split_at(1);
-    println!("Instruction: Turn {} and move {} units", parts.0, parts.1);
-    match santa.follow_instruction(parts, stop_on_visited) {
-      Ok(new_position) => println!("New position: {}", new_position),
-      Err(new_position) => {
-        println!("Stopping because of crossing paths: {}", new_position);
-        break;
-      },
+  let numbers: Vec<&str> = input.split("\n").collect();
+  for i in 0..numbers.len() {
+    for j in 0..numbers.len() {
+      for k in 0..numbers.len() {
+      if i == j || i == k  || j == k { continue }
+        if numbers.get(i).unwrap().parse::<u32>().unwrap() + numbers.get(j).unwrap().parse::<u32>().unwrap() + numbers.get(k).unwrap().parse::<u32>().unwrap() == 2020 {
+          println!("{}", numbers.get(i).unwrap().parse::<u32>().unwrap() * numbers.get(k).unwrap().parse::<u32>().unwrap() * numbers.get(j).unwrap().parse::<u32>().unwrap());
+        }
+      }
     }
   }
 
-  println!("Distance from start: {} units", santa.position.manhattan_distance(&initial_position));
 }
