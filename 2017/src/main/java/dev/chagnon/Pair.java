@@ -1,5 +1,7 @@
 package dev.chagnon;
 
+import java.util.Objects;
+
 public class Pair<Key, Value> {
     private Key key;
 
@@ -24,5 +26,18 @@ public class Pair<Key, Value> {
 
     public void setKey(Key key) {
         this.key = key;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pair<?, ?> pair = (Pair<?, ?>) o;
+        return Objects.equals(getKey(), pair.getKey()) && Objects.equals(getValue(), pair.getValue());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getKey(), getValue());
     }
 }
