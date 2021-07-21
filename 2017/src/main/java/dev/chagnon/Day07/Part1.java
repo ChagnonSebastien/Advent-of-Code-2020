@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 public class Part1 {
     public static void main(String[] args) throws IOException, URISyntaxException {
         List<String> lines = Utils.getInput(7);
-        Pattern numberPattern = Pattern.compile("[0-9]+");
         Pattern lowercaseStringPattern = Pattern.compile("[a-z]+");
 
         Map<String, Set<String>> data = new HashMap<>();
@@ -48,10 +47,8 @@ public class Part1 {
 
             Node node = nodes.get(element.getKey());
             if (node == null) {
-                node = new Node(element.getKey(), 0, children);
+                node = new Node(element.getKey(), 0);
                 nodes.put(element.getKey(), node);
-            } else {
-                node.setChildren(children);
             }
             Node finalNode = node;
             children.forEach(child -> child.setParent(finalNode));
@@ -65,33 +62,22 @@ public class Part1 {
         System.out.println(root.getName());
     }
 
-    public static class Node<T extends Node> {
-        private String name;
+    public static class Node {
+        private final String name;
         private int weight;
         private Node parent;
-        private Set<T> children;
 
-        public Node(String name, int weight, Set<T> children) {
+        public Node(String name, int weight) {
             this.name = name;
             this.weight = weight;
-            this.children = children;
         }
 
         public Node(String name) {
             this.name = name;
-            this.children = new HashSet<>();
         }
 
         public String getName() {
             return name;
-        }
-
-        public int getWeight() {
-            return weight;
-        }
-
-        public void setWeight(int weight) {
-            this.weight = weight;
         }
 
         public Node getParent() {
@@ -100,14 +86,6 @@ public class Part1 {
 
         public void setParent(Node parent) {
             this.parent = parent;
-        }
-
-        public Set<T> getChildren() {
-            return children;
-        }
-
-        public void setChildren(Set<T> children) {
-            this.children = children;
         }
 
         @Override
