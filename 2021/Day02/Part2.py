@@ -6,7 +6,7 @@ def parse_line(line):
     return groups[0], int(groups[1])
 
 
-def part1():
+def part2():
     raw_input = open('input', 'r').read().strip()
     data = [parse_line(line) for line in raw_input.split('\n')]
 
@@ -25,5 +25,5 @@ def part1():
 
 
 if __name__ == '__main__':
-    print(part1())
+    print(part2())
 

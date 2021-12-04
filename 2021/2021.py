@@ -8,7 +8,7 @@ if __name__ == '__main__':
 
     try:
         print(f'            Answer          Time')
-        
+
         for day in range(1, 26):
             print(f'DAY {day:0>2}')
             os.chdir(f'Day{day:0>2}')
