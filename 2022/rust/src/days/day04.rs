@@ -12,8 +12,7 @@ fn parse_assignement(buffer: &[u8], offset: &mut usize) -> (usize, usize, usize,
     return (start_a, end_a, start_b, end_b);
 }
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut contained = 0;
@@ -27,8 +26,7 @@ pub(crate) fn part1(input: &String) -> String {
     return contained.to_string()
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut overlaping = 0;

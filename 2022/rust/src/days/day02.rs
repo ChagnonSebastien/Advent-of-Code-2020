@@ -8,8 +8,7 @@ fn part_1_score(they_play: u8, i_play: u8) -> u8 {
 }
 
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut total_score = 0;
@@ -31,8 +30,7 @@ fn part_2_score(they_play: u8, outcome: u8) -> u8 {
     return score(i_play, outcome);
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut total_score = 0;

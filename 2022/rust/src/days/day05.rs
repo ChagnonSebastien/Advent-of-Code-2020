@@ -204,8 +204,7 @@ fn generate_memory_inventory(amount_stacks: usize) -> Box<dyn Inventory> {
 }
 
 
-pub(crate) fn part1(input: &String, inventory_generator: impl Fn(usize) -> Box<dyn Inventory>) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8], inventory_generator: impl Fn(usize) -> Box<dyn Inventory>) -> String {
     let mut offset = 0;
 
     let mut inventory = parse_crate_stacks(buffer, &mut offset, inventory_generator);
@@ -222,16 +221,15 @@ pub(crate) fn part1(input: &String, inventory_generator: impl Fn(usize) -> Box<d
     return top;
 }
 
-pub(crate) fn part1_memory(input: &String) -> String {
-    part1(input, &generate_memory_inventory)
+pub(crate) fn part1_memory(buffer: &[u8]) -> String {
+    part1(buffer, &generate_memory_inventory)
 }
 
-pub(crate) fn part1_stack(input: &String) -> String {
-    part1(input, &generate_stack_inventory)
+pub(crate) fn part1_stack(buffer: &[u8]) -> String {
+    part1(buffer, &generate_stack_inventory)
 }
 
-pub(crate) fn part2(input: &String, inventory_generator: impl Fn(usize) -> Box<dyn Inventory>) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8], inventory_generator: impl Fn(usize) -> Box<dyn Inventory>) -> String {
     let mut offset = 0;
 
     let mut inventory = parse_crate_stacks(buffer, &mut offset, inventory_generator);
@@ -248,10 +246,10 @@ pub(crate) fn part2(input: &String, inventory_generator: impl Fn(usize) -> Box<d
     return top;
 }
 
-pub(crate) fn part2_memory(input: &String) -> String {
-    part2(input, &generate_memory_inventory)
+pub(crate) fn part2_memory(buffer: &[u8]) -> String {
+    part2(buffer, &generate_memory_inventory)
 }
 
-pub(crate) fn part2_stack(input: &String) -> String {
-    part2(input, &generate_stack_inventory)
+pub(crate) fn part2_stack(buffer: &[u8]) -> String {
+    part2(buffer, &generate_stack_inventory)
 }

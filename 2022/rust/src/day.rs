@@ -2,8 +2,8 @@ use std::fs::read_to_string;
 use std::time::SystemTime;
 
 pub(crate) struct Solutions<'a> {
-    pub(crate) part2: Vec<&'a dyn Fn(&String) -> String>,
-    pub(crate) part1: Vec<&'a dyn Fn(&String) -> String>,
+    pub(crate) part2: Vec<&'a dyn Fn(&[u8]) -> String>,
+    pub(crate) part1: Vec<&'a dyn Fn(&[u8]) -> String>,
 }
 
 pub(crate) struct Day<'a> {
@@ -12,25 +12,30 @@ pub(crate) struct Day<'a> {
 }
 
 impl Day<'_> {
-    pub(crate) fn benchmark(&self, samples: usize) -> u128 {
-        let input = read_to_string(format!("input/{:02}", self.day)).expect("Input file could not be read.");
+    fn run_part(&self, samples: usize, part: usize, buffer: &[u8], benchmark: Option<usize>) -> u128 {
         let mut answer = String::new();
-
         let start = SystemTime::now();
         for _ in 0..samples {
-            answer = self.solutions.as_ref().unwrap().part1.get(0).unwrap()(&input);
+            answer = match part {
+                1 => &self.solutions.as_ref().unwrap().part1,
+                2 => &self.solutions.as_ref().unwrap().part2,
+                _ => panic!(""),
+            }.get(0).unwrap()(buffer);
         }
-        let part1_duration = SystemTime::now().duration_since(start).unwrap().as_micros() / samples as u128;
-        println!("Part 1: {answer}");
-        println!("Took an average of {}μs over {} samples", part1_duration, samples);
+        let duration = SystemTime::now().duration_since(start).unwrap().as_micros() / samples as u128;
+        println!("Part {part}: \x1b[1m\x1b[92m{answer}\x1b[0m");
+        if benchmark.is_some() {
+            println!("Took an average of {}μs over {} samples", duration, benchmark.unwrap());
+        }
+        return duration;
+    }
 
-        let start = SystemTime::now();
-        for _ in 0..samples {
-            answer = self.solutions.as_ref().unwrap().part2.get(0).unwrap()(&input);
-        }
-        let part2_duration = SystemTime::now().duration_since(start).unwrap().as_micros() / samples as u128;
-        println!("Part 2: {answer}");
-        println!("Took an average of {}μs over {} samples", part2_duration, samples);
+    pub(crate) fn run(&self, benchmark: Option<usize>) -> u128 {
+        let input = read_to_string(format!("input/{:02}", self.day)).expect("Input file could not be read.");
+        let samples = benchmark.unwrap_or(1);
+
+        let part1_duration = self.run_part(samples, 1, input.as_bytes(), benchmark);
+        let part2_duration = self.run_part(samples, 2, input.as_bytes(), benchmark);
 
         return part1_duration + part2_duration;
     }

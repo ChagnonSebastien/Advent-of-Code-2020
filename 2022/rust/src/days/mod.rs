@@ -8,6 +8,7 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
 
 use crate::day::{Day, Solutions};
 
@@ -54,6 +55,10 @@ pub(crate) fn get_day<'a>(day: usize) -> Day<'a> {
             10 => Some(Solutions {
                 part1: vec![&day10::part1],
                 part2: vec![&day10::part2],
+            }),
+            11 => Some(Solutions {
+                part1: vec![&day11::part1],
+                part2: vec![&day11::part2],
             }),
             _ => None
         }

@@ -14,8 +14,7 @@ fn priority_from_mask(mut mask: u64) -> u64 {
     return p;
 }
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut priorities_sum = 0;
@@ -46,8 +45,7 @@ pub(crate) fn part1(input: &String) -> String {
     return priorities_sum.to_string();
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut priorities_sum = 0;

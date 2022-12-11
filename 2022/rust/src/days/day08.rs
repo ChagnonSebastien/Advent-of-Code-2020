@@ -1,6 +1,5 @@
-use std::alloc::{alloc, Layout};
+use std::alloc::{alloc, dealloc, Layout};
 use std::marker::PhantomData;
-use std::{alloc, mem};
 use std::ptr::NonNull;
 
 const GRID_SIZE: usize = 99;
@@ -69,8 +68,7 @@ fn scan_row(buffer: &[u8], forest_size: usize, direction: Direction, index: usiz
 }
 
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut visibility = Visibility::new();
 
     for index in 0..GRID_SIZE {
@@ -215,7 +213,7 @@ impl MemForestSurveyor {
             let cap = GRID_SIZE * 2 * 10 * 2;
             let layout = Layout::array::<Peak>(cap).unwrap();
             assert!(layout.size() <= isize::MAX as usize, "Allocation too large");
-            let ptr = NonNull::new(unsafe { alloc(layout) } as *mut Peak).unwrap();
+            let ptr = NonNull::new(alloc(layout) as *mut Peak).unwrap();
 
             let mem_strip_surveyor = MemStripSurveyor {
                 amount_ascending: 0,
@@ -244,7 +242,7 @@ impl MemForestSurveyor {
 impl Drop for MemForestSurveyor {
     fn drop(&mut self) {
         unsafe {
-            alloc::dealloc(
+            dealloc(
                 self.ptr.as_ptr() as *mut u8,
                 Layout::array::<Peak>(self.cap).unwrap(),
             );
@@ -280,16 +278,16 @@ fn part1_unfinished_forest_surveyor(buffer: &[u8], calculator_generator: impl Fn
  * Long to init
  * Long execution
  */
-pub(crate) fn part1_unfinished_stack_forest_surveyor(input: &String) -> String {
-    return part1_unfinished_forest_surveyor(input.as_bytes(), generate_stack_forest_surveyor);
+pub(crate) fn part1_unfinished_stack_forest_surveyor(buffer: &[u8]) -> String {
+    return part1_unfinished_forest_surveyor(buffer, generate_stack_forest_surveyor);
 }
 
 /**
  * Slow to init
  * Even longer execution
  */
-pub(crate) fn part1_unfinished_mem_forest_surveyor(input: &String) -> String {
-    return part1_unfinished_forest_surveyor(input.as_bytes(), generate_memory_forest_surveyor);
+pub(crate) fn part1_unfinished_mem_forest_surveyor(buffer: &[u8]) -> String {
+    return part1_unfinished_forest_surveyor(buffer, generate_memory_forest_surveyor);
 }
 
 
@@ -397,9 +395,7 @@ fn scan_trees(buffer: &[u8], direction: Direction, index: usize, visibility: &mu
     }
 }
 
-pub(crate) fn part2_surveyor(input: &String) -> String {
-    let buffer = input.as_bytes();
-
+pub(crate) fn part2_surveyor(buffer: &[u8]) -> String {
     let mut state = State {
         scores: [[1; GRID_SIZE]; GRID_SIZE],
         highest_score: 0,
@@ -415,9 +411,7 @@ pub(crate) fn part2_surveyor(input: &String) -> String {
     return state.highest_score.to_string()
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
-
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut max_score = 0;
 
     for x in 1..GRID_SIZE-1 {

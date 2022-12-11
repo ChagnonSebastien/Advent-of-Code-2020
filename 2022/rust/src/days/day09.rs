@@ -41,14 +41,13 @@ impl AddAssign<Point> for Point {
     }
 }
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut head = Point { x: 0, y: 0 };
     let mut tail = Point { x: 0, y: 0 };
 
-    let mut visited = HashSet::<Point>::with_capacity(input.len() / 4);
+    let mut visited = HashSet::<Point>::with_capacity(buffer.len() / 4);
     visited.insert(tail);
 
     while offset < buffer.len() {
@@ -100,13 +99,12 @@ pub(crate) fn part1(input: &String) -> String {
     return visited.len().to_string()
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut rope = [Point { x: 0, y: 0 }; 10];
 
-    let mut visited = HashSet::<Point>::with_capacity(input.len() / 4);
+    let mut visited = HashSet::<Point>::with_capacity(buffer.len() / 4);
     visited.insert(Point { x: 0, y: 0 });
 
     while offset < buffer.len() {

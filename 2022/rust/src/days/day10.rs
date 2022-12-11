@@ -14,8 +14,7 @@ fn cpu_tick(buffer: &[u8], offset: &mut usize) -> isize {
     }
 }
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut x: isize = 1;
@@ -34,8 +33,7 @@ pub(crate) fn part1(input: &String) -> String {
     return signal_sum.to_string()
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut x: isize = 1;
@@ -48,10 +46,11 @@ pub(crate) fn part2(input: &String) -> String {
             display.push('\n');
         }
 
-        display.push(match x.abs_diff(tick % 40) <= 1 {
+        let pixel = match x.abs_diff(tick % 40) <= 1 {
             true => '#',
             false => ' ',
-        });
+        };
+        display.push(pixel);
 
         x += cpu_tick(buffer, &mut offset);
         tick += 1;

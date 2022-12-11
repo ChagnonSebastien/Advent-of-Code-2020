@@ -31,10 +31,10 @@ fn index(buffer: &[u8], trigger_span: usize) -> usize {
     return offset + 1;
 }
 
-pub(crate) fn part1(input: &String) -> String {
-    return index(input.as_bytes(), 4).to_string();
+pub(crate) fn part1(buffer: &[u8]) -> String {
+    return index(buffer, 4).to_string();
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    return index(input.as_bytes(), 14).to_string();
+pub(crate) fn part2(buffer: &[u8]) -> String {
+    return index(buffer, 14).to_string();
 }

@@ -106,8 +106,7 @@ fn read_folder_p1(buffer: &[u8], offset: &mut usize) -> (usize, usize) {
 }
 
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     // cd /
@@ -174,8 +173,7 @@ fn read_folder_p2(buffer: &[u8], offset: &mut usize, folders: &mut BinaryHeap<Fo
     return folder_size;
 }
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut folders = BinaryHeap::<FolderContents>::new();

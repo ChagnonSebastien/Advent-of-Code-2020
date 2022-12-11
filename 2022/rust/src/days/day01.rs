@@ -17,12 +17,11 @@ fn read_elf_backpack_calories(buffer: &[u8], offset: &mut usize) -> Result<usize
     }
 }
 
-pub(crate) fn part1(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut max_calories = 0;
-    while offset < input.len() {
+    while offset < buffer.len() {
         let current_calories = read_elf_backpack_calories(buffer, &mut offset).unwrap();
         if current_calories > max_calories {
             max_calories = current_calories;
@@ -34,15 +33,14 @@ pub(crate) fn part1(input: &String) -> String {
 
 const AMOUNT_MAX: usize = 3;
 
-pub(crate) fn part2(input: &String) -> String {
-    let buffer = input.as_bytes();
+pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
     let mut max_calories = [0; AMOUNT_MAX];
     let mut current_calories;
     let mut cursor = 0;
 
-    while offset < input.len() {
+    while offset < buffer.len() {
         current_calories = read_elf_backpack_calories(buffer, &mut offset).unwrap();
         if current_calories > max_calories[AMOUNT_MAX - 1] {
             while cursor < AMOUNT_MAX {
