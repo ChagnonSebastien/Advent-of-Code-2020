@@ -1,3 +1,5 @@
+extern crate core;
+
 mod parser;
 mod day;
 mod days;
@@ -17,7 +19,7 @@ fn main() {
         println!("=========================");
         println!("          Day {:02}         ", date);
         println!("=========================");
-        total_time += day.benchmark(100);
+        total_time += day.benchmark(1);
         println!();
 
         date += 1;
