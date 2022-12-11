@@ -14,6 +14,21 @@ pub(crate) fn read_unsigned_int(buffer: &[u8], offset: &mut usize) -> Result<usi
     return Ok(value);
 }
 
+pub(crate) fn read_signed_int(buffer: &[u8], offset: &mut usize) -> Result<isize, &'static str> {
+    let sign = match buffer[*offset] as char {
+        '-' => {
+            *offset += 1;
+            -1
+        },
+        _ => 1
+    };
+
+    return match read_unsigned_int(buffer, offset) {
+        Ok(value) => Ok(value as isize * sign),
+        Err(err) => Err(err),
+    };
+}
+
 pub(crate) fn read_word<'a>(buffer: &'a [u8], offset: &mut usize) -> Result<&'a[u8], &'static str> {
     if buffer[*offset] < 'a' as u8 || buffer[*offset] > 'z' as u8 {
         return Err("offset is not pointing at a string");
