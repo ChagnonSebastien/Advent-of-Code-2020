@@ -27,24 +27,29 @@ fn main() {
     };
 
     let mut total_time = 0;
-    let mut amount_days_ran = 0;
 
     for date in start..end+1 {
+        println!();
         let day = get_day(date);
         if day.solutions.is_none() {
+            if args.day.is_some() {
+                panic!("Day is not yet implemented")
+            }
             break;
         }
 
-        println!("=========================");
-        println!("          Day {:02}         ", date);
-        println!("=========================");
+        if args.day.is_none() {
+            let width = 20;
+            println!("{}Day {:02}{}", " ".repeat(width), date, " ".repeat(width));
+            println!("{}", "═".repeat(width * 2 + 6));
+        }
         total_time += day.run(args.benchmark);
-        amount_days_ran += 1;
         println!();
 
     }
 
     if args.benchmark.is_some() {
-        println!("The total time of all the days ran was {}μs", total_time);
+        println!("The total time for all the days ran was {} ms", total_time / 1000);
+        println!()
     }
 }

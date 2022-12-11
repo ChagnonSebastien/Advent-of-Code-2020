@@ -35,6 +35,7 @@ pub(crate) fn skip_word(buffer: &[u8], offset: &mut usize) {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn read_word<'a>(buffer: &'a [u8], offset: &mut usize) -> Result<&'a[u8], &'static str> {
     let starting_offset = *offset;
     skip_word(buffer, offset);

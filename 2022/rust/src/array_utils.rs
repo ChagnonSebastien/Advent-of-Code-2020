@@ -26,6 +26,7 @@ pub(crate) fn product_n<T: Copy + MulAssign<T>>(array: &[T], amount: usize) -> T
     return product;
 }
 
+#[allow(dead_code)]
 pub(crate) fn sum_n<T: Copy + AddAssign<T>>(array: &[T], amount: usize) -> T {
     let mut product = array[0];
     for i in 1..amount {

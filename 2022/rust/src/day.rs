@@ -25,7 +25,7 @@ impl Day<'_> {
         let duration = SystemTime::now().duration_since(start).unwrap().as_micros() / samples as u128;
         println!("Part {part}: \x1b[1m\x1b[92m{answer}\x1b[0m");
         if benchmark.is_some() {
-            println!("Took an average of {}μs over {} samples", duration, benchmark.unwrap());
+            println!("Took an average of {} μs", duration);
         }
         return duration;
     }
