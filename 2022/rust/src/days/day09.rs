@@ -1,6 +1,6 @@
 use std::collections::HashSet;
-use std::ops::AddAssign;
 use crate::parser::read_unsigned_int;
+use crate::vector::Vector2D;
 
 enum Direction {
     LEFT, RIGHT, UP, DOWN
@@ -28,26 +28,13 @@ impl Instruction {
     }
 }
 
-#[derive(Clone, Copy, Eq, Hash, PartialEq)]
-struct Point {
-    x: i16,
-    y: i16,
-}
-
-impl AddAssign<Point> for Point {
-    fn add_assign(&mut self, rhs: Point) {
-        self.x += rhs.x;
-        self.y += rhs.y;
-    }
-}
-
 pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut offset = 0;
 
-    let mut head = Point { x: 0, y: 0 };
-    let mut tail = Point { x: 0, y: 0 };
+    let mut head = Vector2D { x: 0, y: 0 };
+    let mut tail = Vector2D { x: 0, y: 0 };
 
-    let mut visited = HashSet::<Point>::with_capacity(buffer.len() / 4);
+    let mut visited = HashSet::<Vector2D<i16>>::with_capacity(buffer.len() / 4);
     visited.insert(tail);
 
     while offset < buffer.len() {
@@ -102,19 +89,19 @@ pub(crate) fn part1(buffer: &[u8]) -> String {
 pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut offset = 0;
 
-    let mut rope = [Point { x: 0, y: 0 }; 10];
+    let mut rope = [Vector2D { x: 0, y: 0 }; 10];
 
-    let mut visited = HashSet::<Point>::with_capacity(buffer.len() / 4);
-    visited.insert(Point { x: 0, y: 0 });
+    let mut visited = HashSet::<Vector2D<i16>>::with_capacity(buffer.len() / 4);
+    visited.insert(Vector2D { x: 0, y: 0 });
 
     while offset < buffer.len() {
         let instruction = Instruction::parse(buffer, &mut offset);
         for _ in 0..instruction.distance {
             let mut shift = match instruction.direction {
-                Direction::LEFT => Point { x: -1, y: 0 },
-                Direction::RIGHT => Point { x: 1, y: 0 },
-                Direction::UP => Point { x: 0, y: 1 },
-                Direction::DOWN => Point { x: 0, y: -1 },
+                Direction::LEFT => Vector2D { x: -1, y: 0 },
+                Direction::RIGHT => Vector2D { x: 1, y: 0 },
+                Direction::UP => Vector2D { x: 0, y: 1 },
+                Direction::DOWN => Vector2D { x: 0, y: -1 },
             };
             let mut knot = 0;
             while knot < 10 {

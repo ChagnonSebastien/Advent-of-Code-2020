@@ -47,7 +47,7 @@ pub(crate) fn part2(buffer: &[u8]) -> String {
         }
 
         let pixel = match x.abs_diff(tick % 40) <= 1 {
-            true => '#',
+            true => '█',
             false => ' ',
         };
         display.push(pixel);

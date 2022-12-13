@@ -2,6 +2,7 @@ extern crate core;
 
 mod array_utils;
 mod parser;
+mod vector;
 mod day;
 mod days;
 
@@ -49,7 +50,7 @@ fn main() {
     }
 
     if args.benchmark.is_some() {
-        println!("The total time for all the days ran was {} ms", total_time / 1000);
+        println!("The total time was {} ms", total_time / 1000);
         println!()
     }
 }

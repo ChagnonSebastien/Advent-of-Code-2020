@@ -56,7 +56,8 @@ impl Operation {
 }
 
 struct Monkey {
-    inventory: [usize; MAX_HAND_SIZE],
+    index: usize,
+    inventory: [Option<usize>; MAX_HAND_SIZE],
     inventory_size: usize,
     operation: Operation,
     test: usize,
@@ -67,7 +68,8 @@ struct Monkey {
 impl Default for Monkey {
     fn default() -> Self {
         Monkey {
-            inventory: [0; MAX_HAND_SIZE],
+            index: 0,
+            inventory: [None; MAX_HAND_SIZE],
             inventory_size: 0,
             operation: PLUS(Term::OLD, Term::OLD),
             test: 0,
@@ -84,7 +86,7 @@ impl Monkey {
         *offset += 18;
         while buffer[*offset] != '\n' as u8 {
             *offset += 2;
-            self.inventory[self.inventory_size] = read_unsigned_int(buffer, offset).unwrap() as usize;
+            self.inventory[self.inventory_size] = Some(read_unsigned_int(buffer, offset).unwrap() as usize);
             self.inventory_size += 1;
         }
         *offset += 20;
@@ -112,6 +114,7 @@ fn parse_monkeys(buffer: &[u8]) -> [Monkey; AMOUNT_MONKEYS] {
     let mut monkey_index = 0;
     while offset < buffer.len() {
         monkeys[monkey_index].parse(buffer, &mut offset);
+        monkeys[monkey_index].index = monkey_index;
         monkey_index += 1;
     }
     return monkeys;
@@ -130,7 +133,7 @@ fn simulate(monkeys: &mut [Monkey; AMOUNT_MONKEYS], rounds: usize, tensed: bool)
     for _ in 0..rounds {
         for monkey_index in 0..AMOUNT_MONKEYS {
             for considering_item in 0..monkeys[monkey_index].inventory_size {
-                let mut worry_level = monkeys[monkey_index].inventory[considering_item];
+                let mut worry_level = monkeys[monkey_index].inventory[considering_item].unwrap();
                 worry_level = monkeys[monkey_index].operation.apply(worry_level);
                 total_inspections[monkey_index] += 1;
                 if tensed {
@@ -139,7 +142,7 @@ fn simulate(monkeys: &mut [Monkey; AMOUNT_MONKEYS], rounds: usize, tensed: bool)
                     worry_level /= 3;
                 }
                 let throwing_to = monkeys[monkey_index].consider_throw(worry_level);
-                monkeys[throwing_to].inventory[monkeys[throwing_to].inventory_size] = worry_level;
+                monkeys[throwing_to].inventory[monkeys[throwing_to].inventory_size] = Some(worry_level);
                 monkeys[throwing_to].inventory_size += 1;
             }
             monkeys[monkey_index].inventory_size = 0;
@@ -149,6 +152,51 @@ fn simulate(monkeys: &mut [Monkey; AMOUNT_MONKEYS], rounds: usize, tensed: bool)
     return total_inspections;
 }
 
+fn simulate_alternative(monkeys: &mut [Monkey; AMOUNT_MONKEYS], rounds: usize, tensed: bool) -> [usize; AMOUNT_MONKEYS] {
+
+    let mut modulus = 1;
+    if tensed {
+        for i in 0..monkeys.len() {
+            modulus *= monkeys[i].test;
+        }
+    }
+
+    let mut total_inspections = [0 as usize; AMOUNT_MONKEYS];
+    for m_i in 0..AMOUNT_MONKEYS {
+        for item in monkeys[m_i].inventory {
+            if item.is_none() {
+                break;
+            }
+
+            let mut monkey_index = monkeys[m_i].index;
+            let mut worry_level = item.unwrap();
+            for _ in 0..rounds {
+                let mut prev_monkey_index = monkey_index;
+                while prev_monkey_index <= monkey_index {
+                    worry_level = monkeys[monkey_index].operation.apply(worry_level);
+                    total_inspections[monkey_index] += 1;
+                    if tensed {
+                        worry_level %= modulus;
+                    } else {
+                        worry_level /= 3;
+                    }
+                    prev_monkey_index = monkey_index;
+                    monkey_index = monkeys[monkey_index].consider_throw(worry_level)
+                }
+            }
+        }
+    }
+
+    return total_inspections;
+}
+
+pub(crate) fn part1_old(buffer: &[u8]) -> String {
+    let mut monkeys = parse_monkeys(buffer);
+    let mut total_inspections = simulate(&mut monkeys, 20, false);
+    top_n(&mut total_inspections, CHASING_AMOUNT);
+    return product_n(&total_inspections, CHASING_AMOUNT).to_string()
+}
+
 pub(crate) fn part1(buffer: &[u8]) -> String {
     let mut monkeys = parse_monkeys(buffer);
     let mut total_inspections = simulate(&mut monkeys, 20, false);
@@ -156,9 +204,16 @@ pub(crate) fn part1(buffer: &[u8]) -> String {
     return product_n(&total_inspections, CHASING_AMOUNT).to_string()
 }
 
+pub(crate) fn part2_old(buffer: &[u8]) -> String {
+    let mut monkeys = parse_monkeys(buffer);
+    let mut total_inspections = simulate_alternative(&mut monkeys, 10000, true);
+    top_n(&mut total_inspections, CHASING_AMOUNT);
+    return product_n(&total_inspections, CHASING_AMOUNT).to_string()
+}
+
 pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut monkeys = parse_monkeys(buffer);
-    let mut total_inspections = simulate(&mut monkeys, 10000, true);
+    let mut total_inspections = simulate_alternative(&mut monkeys, 10000, true);
     top_n(&mut total_inspections, CHASING_AMOUNT);
     return product_n(&total_inspections, CHASING_AMOUNT).to_string()
 }
