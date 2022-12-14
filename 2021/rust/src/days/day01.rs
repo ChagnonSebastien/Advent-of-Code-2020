@@ -32,8 +32,10 @@ pub(crate) fn part2(buffer: &[u8]) -> String {
 
     let mut increasing_times = 0;
     while cursor < buffer.len() {
+        let mut depth = previous_depth;
+        depth -= previous_depths[items];
         previous_depths[items] = read_unsigned_int(buffer, &mut cursor);
-        let depth = sum_n(&previous_depths, 3);
+        depth += previous_depths[items];
         cursor += 1;
         if depth > previous_depth {
             increasing_times += 1;

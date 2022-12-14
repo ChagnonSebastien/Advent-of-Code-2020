@@ -1,9 +1,9 @@
 use std::alloc::{alloc, dealloc, Layout};
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashSet};
+use std::collections::HashSet;
+use std::collections::binary_heap::BinaryHeap;
 use std::marker::PhantomData;
 use std::ptr::{NonNull, read, write};
-use crate::vector::Vector2D;
 
 const MAP_HEIGHT: usize = 41;
 const MAP_WIDTH: usize = 179;
@@ -16,11 +16,6 @@ struct Coordinate {
     right_neighbor: bool,
     bottom_neighbor: bool,
     height: u8,
-}
-
-
-fn offset_of(vector: Vector2D<u8>) -> usize {
-    vector.y as usize * MAP_WIDTH + vector.x as usize
 }
 
 fn sanitize_height(char: u8) -> u8 {
@@ -40,8 +35,7 @@ trait Map {
         let (mut start, mut end) = (Default::default(), Default::default());
         for y in 0..MAP_HEIGHT as u8 {
             for x in 0..MAP_WIDTH as u8 {
-                let pos = Vector2D { x, y };
-                let parsed_offset = offset_of(pos);
+                let parsed_offset = y as usize * MAP_WIDTH + x as usize;
                 let mut height = buffer[offset];
                 if height == 'S' as u8 {
                     start = parsed_offset;

@@ -14,6 +14,7 @@ pub(crate) fn read_unsigned_int(buffer: &[u8], offset: &mut usize) -> usize {
     return value;
 }
 
+#[allow(dead_code)]
 pub(crate) fn read_signed_int(buffer: &[u8], offset: &mut usize) -> isize {
     let sign = match buffer[*offset] as char {
         '-' => {
@@ -44,6 +45,7 @@ pub(crate) fn read_word<'a>(buffer: &'a [u8], offset: &mut usize) -> Result<&'a[
     return Ok(&buffer[starting_offset..*offset]);
 }
 
+#[allow(dead_code)]
 pub(crate) fn move_to_next_line(buffer: &[u8], offset: &mut usize) {
     while buffer[*offset] != '\n' as u8 {
         *offset += 1;
