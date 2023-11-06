@@ -11,6 +11,8 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
+mod day15;
 
 use crate::day::{Day, Solutions};
 
@@ -60,15 +62,23 @@ pub(crate) fn get_day<'a>(day: usize) -> Day<'a> {
             }),
             11 => Some(Solutions {
                 part1: vec![&day11::part1, &day11::part1_old],
-                part2: vec![&day11::part2, &day11::part2_old],
+                part2: vec![&day11::part2, &day11::part2_old, &day11::part2_oldest],
             }),
             12 => Some(Solutions {
-                part1: vec![&day12::part1],
-                part2: vec![&day12::part2],
+                part1: vec![&day12::part1, &day12::part1_old],
+                part2: vec![&day12::part2, &day12::part2_old],
             }),
             13 => Some(Solutions {
                 part1: vec![&day13::part1],
-                part2: vec![&day13::part2],
+                part2: vec![&day13::part2, &day13::part2_old],
+            }),
+            14 => Some(Solutions {
+                part1: vec![&day14::part1, &day14::part1_simple, &day14::part1_complex_hashset],
+                part2: vec![&day14::part2, &day14::part2_simple, &day14::part2_complex_hashset],
+            }),
+            15 => Some(Solutions {
+                part1: vec![&day15::part1],
+                part2: vec![&day15::part2],
             }),
             _ => None
         }

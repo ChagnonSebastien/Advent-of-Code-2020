@@ -1,3 +1,4 @@
+use std::collections::{HashMap};
 use crate::array_utils::{product_n, top_n};
 use crate::days::day11::Operation::{PLUS, TIMES};
 use crate::parser::read_unsigned_int;
@@ -190,6 +191,83 @@ fn simulate_alternative(monkeys: &mut [Monkey; AMOUNT_MONKEYS], rounds: usize, t
     return total_inspections;
 }
 
+fn simulate_alternative_2(monkeys: &mut [Monkey; AMOUNT_MONKEYS], rounds: usize, tensed: bool) -> [usize; AMOUNT_MONKEYS] {
+
+    let mut modulus = 1;
+    if tensed {
+        for i in 0..monkeys.len() {
+            modulus *= monkeys[i].test;
+        }
+    }
+
+    let mut visited = HashMap::new();
+    let mut visits = Vec::new();
+    let mut total_inspections = [0 as usize; AMOUNT_MONKEYS];
+
+    for m_i in 0..AMOUNT_MONKEYS {
+        'next_item:
+        for item in monkeys[m_i].inventory {
+            if item.is_none() {
+                break;
+            }
+
+            visited.clear();
+            visits.clear();
+
+            let mut monkey_index = monkeys[m_i].index;
+            let mut worry_level = item.unwrap();
+            visited.insert((monkey_index, worry_level), 0);
+            visits.push((monkey_index, 0));
+
+            let mut round = 0;
+            while round < rounds {
+                let mut prev_monkey_index = monkey_index;
+                let mut first = true;
+                while prev_monkey_index <= monkey_index {
+                    if first {
+                        first = false;
+                    } else {
+                        visits.push((monkey_index, round));
+                    }
+                    worry_level = monkeys[monkey_index].operation.apply(worry_level);
+                    if tensed {
+                        worry_level %= modulus;
+                    } else {
+                        worry_level /= 3;
+                    }
+                    prev_monkey_index = monkey_index;
+                    monkey_index = monkeys[monkey_index].consider_throw(worry_level);
+                }
+                round += 1;
+                let prev_visit = visited.insert((monkey_index, worry_level), round);
+                if prev_visit.is_some() {
+                    let prev_visit_index = prev_visit.unwrap();
+                    let circle_size = round - prev_visit_index;
+                    let circling_rounds = rounds - prev_visit_index;
+                    let amount_circles = circling_rounds / circle_size;
+                    let remaining_rounds_after_whole_circles = circling_rounds % circle_size;
+                    for (monkey_data, round_number) in &visits {
+                        if *round_number < prev_visit_index {
+                            total_inspections[*monkey_data] += 1;
+                        } else {
+                            let adjusted_index = (round_number - prev_visit_index) % circle_size;
+                            total_inspections[*monkey_data] += amount_circles;
+                            if adjusted_index < remaining_rounds_after_whole_circles {
+                                total_inspections[*monkey_data] += 1;
+                            }
+                        }
+                    }
+                    continue 'next_item;
+                } else {
+                    visits.push((monkey_index, round));
+                }
+            }
+        }
+    }
+
+    return total_inspections;
+}
+
 pub(crate) fn part1_old(buffer: &[u8]) -> String {
     let mut monkeys = parse_monkeys(buffer);
     let mut total_inspections = simulate(&mut monkeys, 20, false);
@@ -204,6 +282,13 @@ pub(crate) fn part1(buffer: &[u8]) -> String {
     return product_n(&total_inspections, CHASING_AMOUNT).to_string()
 }
 
+pub(crate) fn part2_oldest(buffer: &[u8]) -> String {
+    let mut monkeys = parse_monkeys(buffer);
+    let mut total_inspections = simulate_alternative(&mut monkeys, 10000, true);
+    top_n(&mut total_inspections, CHASING_AMOUNT);
+    return product_n(&total_inspections, CHASING_AMOUNT).to_string()
+}
+
 pub(crate) fn part2_old(buffer: &[u8]) -> String {
     let mut monkeys = parse_monkeys(buffer);
     let mut total_inspections = simulate_alternative(&mut monkeys, 10000, true);
@@ -213,7 +298,7 @@ pub(crate) fn part2_old(buffer: &[u8]) -> String {
 
 pub(crate) fn part2(buffer: &[u8]) -> String {
     let mut monkeys = parse_monkeys(buffer);
-    let mut total_inspections = simulate_alternative(&mut monkeys, 10000, true);
+    let mut total_inspections = simulate_alternative_2(&mut monkeys, 10000, true);
     top_n(&mut total_inspections, CHASING_AMOUNT);
     return product_n(&total_inspections, CHASING_AMOUNT).to_string()
 }

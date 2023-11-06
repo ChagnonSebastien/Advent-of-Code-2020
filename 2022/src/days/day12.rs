@@ -9,6 +9,44 @@ const MAP_HEIGHT: usize = 41;
 const MAP_WIDTH: usize = 179;
 const MAP_AREA: usize = MAP_WIDTH * MAP_HEIGHT;
 
+trait Visited {
+    fn visit(&mut self, position: usize) -> bool;
+    fn is_visited(&self, position: &usize) -> bool;
+}
+
+struct HashVisitedState {
+    state: HashSet<usize>,
+}
+
+impl Visited for HashVisitedState {
+    fn visit(&mut self, position: usize) -> bool {
+        self.state.insert(position)
+    }
+
+    fn is_visited(&self, position: &usize) -> bool {
+        self.state.contains(position)
+    }
+}
+
+struct StackVisitedState {
+    state: [bool; MAP_AREA],
+}
+
+impl Visited for StackVisitedState {
+    fn visit(&mut self, position: usize) -> bool {
+        if self.state[position] {
+            return false;
+        }
+
+        self.state[position] = true;
+        return true;
+    }
+
+    fn is_visited(&self, position: &usize) -> bool {
+        self.state[*position]
+    }
+}
+
 #[derive(Copy, Clone)]
 struct Coordinate {
     top_neighbor: bool,
@@ -197,13 +235,58 @@ impl PartialEq<Self> for Solution {
     }
 }
 
-pub(crate) fn part1(buffer: &[u8]) -> String {
-    let mut map = StackMap::new();
+trait SolutionSorter {
+    fn push(&mut self, solution: Solution);
+    fn pop(&mut self) -> Option<Solution>;
+}
+
+struct BinaryHeapSorter {
+    solutions: BinaryHeap<Solution>,
+}
+
+impl SolutionSorter for BinaryHeapSorter {
+    fn push(&mut self, solution: Solution) {
+        self.solutions.push(solution);
+    }
+
+    fn pop(&mut self) -> Option<Solution> {
+        self.solutions.pop()
+    }
+}
+
+struct VectorSorter {
+    solutions: [Vec<Solution>; 3],
+    cursor: usize,
+    weight_at_cursor: usize,
+}
+
+impl SolutionSorter for VectorSorter {
+    fn push(&mut self, solution: Solution) {
+        let weight = solution.weight();
+        let over_weight = self.weight_at_cursor.abs_diff(weight);
+        if over_weight >= 3 {
+            self.solutions[self.cursor].push(solution);
+            self.weight_at_cursor = weight;
+            return;
+        }
+
+        self.solutions[(self.cursor + over_weight) % 3].push(solution);
+    }
+
+    fn pop(&mut self) -> Option<Solution> {
+        while self.solutions[self.cursor].is_empty() {
+            self.cursor = (self.cursor + 1) % 3;
+            self.weight_at_cursor -= 1;
+        }
+
+        self.solutions[self.cursor].pop()
+    }
+}
+
+fn part1_algo(buffer: &[u8], map: &mut dyn Map, visited: &mut dyn Visited, sorter: &mut dyn SolutionSorter) -> String {
     let (end, start) = map.build_from_buffer(buffer);
 
-    let mut solutions = BinaryHeap::<Solution>::new();
-    let mut visited = HashSet::<usize>::new();
-    visited.insert(start);
+    visited.visit(start);
 
     let mut considering = Some(Solution {
         moves: 0,
@@ -220,43 +303,58 @@ pub(crate) fn part1(buffer: &[u8]) -> String {
         let coordinate = map.get_coordinate(current.pos);
         if coordinate.top_neighbor {
             let neighbor_pos = current.pos - MAP_WIDTH;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
             }
         }
         if coordinate.bottom_neighbor {
             let neighbor_pos = current.pos + MAP_WIDTH;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
             }
         }
         if coordinate.left_neighbor {
             let neighbor_pos = current.pos - 1;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
             }
         }
         if coordinate.right_neighbor {
             let neighbor_pos = current.pos + 1;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: distance(neighbor_pos, end) })
             }
         }
 
-        considering = solutions.pop();
+        considering = sorter.pop();
     }
 
     // map.draw(&visited);
     return considering.unwrap().moves.to_string()
 }
 
-pub(crate) fn part2(buffer: &[u8]) -> String {
+pub(crate) fn part1_old(buffer: &[u8]) -> String {
     let mut map = MemMap::new();
+    let mut visited = HashVisitedState { state: HashSet::new() };
+    let mut sorter = BinaryHeapSorter { solutions: BinaryHeap::new() };
+    return part1_algo(buffer, &mut map, &mut visited, &mut sorter);
+}
+
+pub(crate) fn part1(buffer: &[u8]) -> String {
+    let mut map = StackMap::new();
+    let mut visited = StackVisitedState { state: [false; MAP_AREA] };
+    let mut sorter = VectorSorter {
+        solutions: [Vec::new(), Vec::new(), Vec::new()],
+        cursor: 0,
+        weight_at_cursor: 0,
+    };
+    return part1_algo(buffer, &mut map, &mut visited, &mut sorter);
+}
+
+fn part2_algo(buffer: &[u8], map: &mut dyn Map, visited: &mut dyn Visited, sorter: &mut dyn SolutionSorter) -> String {
     let (_, end) = map.build_from_buffer(buffer);
 
-    let mut solutions = BinaryHeap::<Solution>::new();
-    let mut visited = HashSet::<usize>::new();
-    visited.insert(end);
+    visited.visit(end);
 
     let mut considering = Some(Solution {
         moves: 0,
@@ -273,32 +371,50 @@ pub(crate) fn part2(buffer: &[u8]) -> String {
 
         if coordinate.top_neighbor {
             let neighbor_pos = current.pos - MAP_WIDTH;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
             }
         }
         if coordinate.bottom_neighbor {
             let neighbor_pos = current.pos + MAP_WIDTH;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
             }
         }
         if coordinate.left_neighbor {
             let neighbor_pos = current.pos - 1;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
             }
         }
         if coordinate.right_neighbor {
             let neighbor_pos = current.pos + 1;
-            if visited.insert(neighbor_pos) {
-                solutions.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
+            if visited.visit(neighbor_pos) {
+                sorter.push(Solution { moves: current.moves + 1, pos: neighbor_pos, distance: neighbor_pos % MAP_WIDTH })
             }
         }
 
-        considering = solutions.pop();
+        considering = sorter.pop();
     }
 
     // map.draw(&visited);
     return considering.unwrap().moves.to_string()
+}
+
+pub(crate) fn part2_old(buffer: &[u8]) -> String {
+    let mut map = MemMap::new();
+    let mut visited = HashVisitedState { state: HashSet::new() };
+    let mut sorter = BinaryHeapSorter { solutions: BinaryHeap::new() };
+    return part2_algo(buffer, &mut map, &mut visited, &mut sorter);
+}
+
+pub(crate) fn part2(buffer: &[u8]) -> String {
+    let mut map = StackMap::new();
+    let mut visited = StackVisitedState { state: [false; MAP_AREA] };
+    let mut sorter = VectorSorter {
+        solutions: [Vec::new(), Vec::new(), Vec::new()],
+        cursor: 0,
+        weight_at_cursor: 0,
+    };
+    return part2_algo(buffer, &mut map, &mut visited, &mut sorter);
 }
