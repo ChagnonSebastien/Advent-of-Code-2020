@@ -2,7 +2,7 @@
 
 | Year          | Stars      | Language       | Challenge                                             | Status                |
 | ------------- | -----      | --------       | ----------------------------------------------------- | --------------------- |
-| [2023](/2023) | 0*         | Java           | Use the new language features as much as possible     | Not started           |
+| [2023](/2023) | 2*         | Java           | Use the new language features as much as possible     | In progress           |
 | [2022](/2022) | 31*        | Rust           | Low execution time                                    | Lost interest for now |
 | [2021](/2021) | 6*         | Rust           | Low execution time                                    | Lost interest for now |
 | [2020](/2020) | 50*        | Python         | Solving speed, trying to get on the leaderboard       | Completed             |

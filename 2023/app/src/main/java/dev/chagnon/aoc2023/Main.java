@@ -27,7 +27,7 @@ public class Main implements Callable<Integer> {
             System.out.println(String.format("== Day %02d ==", day.getN()));
 
             URL inputPath = Resources.getResource(String.format("input%02d", day.getN()));
-            String input = Resources.toString(inputPath, StandardCharsets.UTF_8);
+            String input = Resources.toString(inputPath, StandardCharsets.UTF_8).trim();
 
             String result1 = day.getRunner().part1(input);
             System.out.println(String.format("Part 1: \u001B[32m%s\u001B[0m", result1));

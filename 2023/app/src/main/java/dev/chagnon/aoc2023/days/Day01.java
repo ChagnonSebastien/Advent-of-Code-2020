@@ -3,18 +3,55 @@
  */
 package dev.chagnon.aoc2023.days;
 
+import java.util.List;
 import dev.chagnon.aoc2023.DayRunner;
 
 public class Day01 implements DayRunner {
 
+    private int calibrationValue(String line) {
+        int firstNumber = -1;
+        int lastNumber = -1;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c >= '0' && c <= '9') {
+                int value = c - '0';
+                if (firstNumber == -1) {
+                    firstNumber = 10 * value;
+                }
+                lastNumber = value;
+            }
+        }
+        return firstNumber + lastNumber;
+    }
+
     @Override
     public String part1(String input) {
-        return "TODO";
+        var lines = List.of(input.split("\n"));
+        int sum = 0;
+        for (String line : lines) {
+            sum += calibrationValue(line);
+        }
+        return String.valueOf(sum);
     }
 
     @Override
     public String part2(String input) {
-        return "TODO";
+        var lines = List.of(input.split("\n"));
+        int sum = 0;
+        for (String line : lines) {
+            line = line.replaceAll("zero", "ze0ro");
+            line = line.replaceAll("one", "o1ne");
+            line = line.replaceAll("two", "t2wo");
+            line = line.replaceAll("three", "thr3ee");
+            line = line.replaceAll("four", "fo4ur");
+            line = line.replaceAll("five", "fi5ve");
+            line = line.replaceAll("six", "si6x");
+            line = line.replaceAll("seven", "sev7en");
+            line = line.replaceAll("eight", "ei8ght");
+            line = line.replaceAll("nine", "ni9ne");
+            sum += calibrationValue(line);
+        }
+        return String.valueOf(sum);
     }
 
 }
