@@ -3,20 +3,177 @@
  */
 package dev.chagnon.aoc2023.days;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import dev.chagnon.aoc2023.DayRunner;
+import lombok.AllArgsConstructor;
 import lombok.ToString;
 
 public class Day03 implements DayRunner {
 
+    @AllArgsConstructor
+    static class Vector2D {
+        int x;
+        int y;
+
+        boolean adjacentTo(Vector2D other) {
+            var dx = Math.abs(this.x - other.x);
+            if (dx > 1) {
+                return false;
+            }
+
+            var dy = Math.abs(this.y - other.y);
+            if (dy > 1) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(%d,%d)", x, y);
+        }
+    }
+
+
+    static private class Part {
+        int partNumber;
+        Set<Vector2D> pos = new HashSet<>();
+        Set<Symbol> sees = new HashSet<>();
+
+        Part(int partNumber) {
+            this.partNumber = partNumber;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Part %d", partNumber, pos.toString());
+        }
+    }
+
+    @AllArgsConstructor
+    static private class Symbol {
+        Vector2D pos;
+        char symbol;
+        Set<Part> sees = new HashSet<>();
+
+        Symbol(Vector2D pos, char symbol) {
+            this.pos = pos;
+            this.symbol = symbol;
+        }
+
+        boolean isAdjacentTo(Part part) {
+            for (var otherPos : part.pos) {
+                if (pos.adjacentTo(otherPos)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return pos.toString();
+        }
+    }
+
+    @ToString
+    static private class Motor {
+
+        List<Part> parts = new ArrayList<>();
+        List<Symbol> symbols = new ArrayList<>();
+
+        void parseLine(int i, String line) {
+            int numberStart = -1;
+            int numberValue = 0;
+
+            for (int j = 0; j < line.length(); j++) {
+                var currentChar = line.charAt(j);
+                if (currentChar >= '0' && currentChar <= '9') {
+                    if (numberStart == -1) {
+                        numberStart = j;
+                        numberValue = 0;
+                    }
+
+                    numberValue *= 10;
+                    numberValue += currentChar - '0';
+
+                }
+                else {
+                    if (numberStart != -1) {
+                        var newPart = new Part(numberValue);
+                        for (var tj = numberStart; tj < j; tj++) {
+                            newPart.pos.add(new Vector2D(i, tj));
+                        }
+                        for (var symbol : this.symbols) {
+                            if (symbol.isAdjacentTo(newPart)) {
+                                symbol.sees.add(newPart);
+                                newPart.sees.add(symbol);
+                            }
+                        }
+                        parts.add(newPart);
+                        numberStart = -1;
+                    }
+
+                    if (currentChar != '.') {
+                        var symbol = new Symbol(new Vector2D(i, j), currentChar);
+                        for (var part : parts) {
+                            if (symbol.isAdjacentTo(part)) {
+                                symbol.sees.add(part);
+                                part.sees.add(symbol);
+                            }
+                        }
+                        symbols.add(symbol);
+                    }
+                }
+            }
+        }
+
+    }
+
     @Override
     public String part1(String input) {
-        return "TODO";
+        var lines = List.of(input.split("\n"));
+        var motor = new Motor();
+
+        for (int i = 0; i < lines.size(); i++) {
+            motor.parseLine(i, lines.get(i));
+        }
+
+        int sum = 0;
+        for (var part : motor.parts) {
+            if (part.sees.size() > 0) {
+                sum += part.partNumber;
+            }
+        }
+
+        return String.valueOf(sum);
     }
 
     @Override
     public String part2(String input) {
-        return "TODO";
+        var lines = List.of(input.split("\n"));
+        var motor = new Motor();
+
+        for (int i = 0; i < lines.size(); i++) {
+            motor.parseLine(i, lines.get(i));
+        }
+
+        int sum = 0;
+        for (var symbol : motor.symbols) {
+            if (symbol.symbol == '*' && symbol.sees.size() == 2) {
+                var product = 1;
+                for (var part : symbol.sees) {
+                    product *= part.partNumber;
+                }
+                sum += product;
+            }
+        }
+
+        return String.valueOf(sum);
     }
 
 }

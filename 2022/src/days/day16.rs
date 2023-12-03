@@ -60,7 +60,6 @@ impl State {
     }
 
     fn nextState(n: u64) -> impl std::iter::Iterator<Item = State> {
-        let mut D
         let mut num = 0;
         std::iter::from_fn(move || {
             let result;
