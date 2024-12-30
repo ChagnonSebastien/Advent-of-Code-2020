@@ -13,8 +13,8 @@ var walkingCycles = []vector{
 	{0, -1},
 }
 
-func (v *vector) add(other *vector) vector {
-	return vector{v.x + other.x, v.y + other.y}
+func (v *vector) add(other *vector) *vector {
+	return &vector{v.x + other.x, v.y + other.y}
 }
 
 func (v *vector) equals(other *vector) bool {
@@ -61,7 +61,7 @@ simulation:
 			continue simulation
 		}
 
-		guardPosition = tileInFront
+		guardPosition = *tileInFront
 		visited[guardPosition.String()] = true
 		if _, ok := state[fmt.Sprintf("%s%d", guardPosition.String(), currentWalkingCycle)]; ok {
 			return 0
