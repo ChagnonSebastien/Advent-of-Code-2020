@@ -2,7 +2,7 @@
 
 | Year          | Stars      | Language       | Challenge                                             | Status                |
 | ------------- | -----      | --------       | ----------------------------------------------------- | --------------------- |
-| [2024](/2024) | 18*        | Golang         |                                                       | In progress           |
+| [2024](/2024) | 20*        | Golang         |                                                       | In progress           |
 | [2023](/2023) | 6*         | Java           | Use the new language features as much as possible     | Lost interest for now |
 | [2022](/2022) | 31*        | Rust           | Low execution time                                    | Lost interest for now |
 | [2021](/2021) | 36*        | Rust           | Low execution time                                    | Lost a bunch of solutions in a disk corruption 😥 Lost interest for now |
