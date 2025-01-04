@@ -2,7 +2,7 @@
 
 | Year          | Stars      | Language       | Challenge                                             | Status                |
 | ------------- | -----      | --------       | ----------------------------------------------------- | --------------------- |
-| [2024](/2024) | 20*        | Golang         |                                                       | In progress           |
+| [2024](/2024) | 22*        | Golang         |                                                       | In progress           |
 | [2023](/2023) | 6*         | Java           | Use the new language features as much as possible     | Lost interest for now |
 | [2022](/2022) | 31*        | Rust           | Low execution time                                    | Lost interest for now |
 | [2021](/2021) | 36*        | Rust           | Low execution time                                    | Lost a bunch of solutions in a disk corruption 😥 Lost interest for now |
@@ -13,4 +13,4 @@
 | [2016](/2016) | 50*        | Rust           | Learn Rust                                            | Completed             |
 | [2015](/2015) | 50*        | Python         | -                                                     | Completed             |
               
-Total stars: 306*
+Total stars: 330*
